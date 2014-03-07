@@ -5,11 +5,13 @@ typedef struct GraphStruct{
 	struct VertexRootStruct *vertices;
 } Graph;
 typedef struct VertexRootStruct{
+	int visited;
 	int name;
 	struct EdgeStruct *edges;
 } Vertex_root;
 typedef struct VertexStruct{
 	int name;
+	int weight;
 } Vertex;
 typedef struct EdgeStruct{
 	struct VertexStruct vertx;
@@ -40,16 +42,16 @@ Graph *create_adj_list(){
 	vert = (Vertex *)malloc(v*sizeof(Vertex));
 	graphModel->vertices = (Vertex_root *)malloc(v*sizeof(Vertex_root));
 	graphModel->vertex_number = v;
-	//make vertex objects
+	/*make vertex objects
 	for(i=0;i<v;i++){
 		vert[i].name = i;
 	}
-	//--done
+	//--done*/
 	for(i =0;i<v;i++){
 	//initalize the graph model
 	graphModel->vertices[i].name = i;
 	graphModel->vertices[i].edges= NULL;
-
+	graphModel->vertices[i].visited = 0;
 		for(j=0;j<v;j++){
 			if(j!=i){
 				/*printf("Is there an Edge from %d to %d?(y/n):", (i+1), (j+1));
@@ -57,19 +59,26 @@ Graph *create_adj_list(){
 				//DEBUG DEBUG DEBUG
 				if(ch == 'Y' || ch == 'y'){
 					if(graphModel->vertices[i].edges == NULL){//first edge
+						//make vertex object
+						vert = (Vertex *)malloc(sizeof(Vertex));
+						vert->name = j;vert->weight=1;
+						//--done
 						tempEdge = (Edge *)malloc(sizeof(Edge));
-						tempEdge->vertx = vert[j];
+						tempEdge->vertx = *vert;
 						tempEdge->next = NULL;
 						graphModel->vertices[i].edges = tempEdge;
 					}else{
-						//not the first edge;
+						vert = (Vertex *)malloc(sizeof(Vertex));
+						vert->name = j;vert->weight=1;
+						//--done
+						//not the first edge;						
 						Edge *localTemp=graphModel->vertices[i].edges;
 						while(localTemp->next != NULL){
 							localTemp = localTemp->next;
 						
 						}
 						tempEdge = (Edge *)malloc(sizeof(Edge));
-						tempEdge->vertx = vert[j];
+						tempEdge->vertx = *vert;
 						tempEdge->next = NULL;
 						localTemp->next = tempEdge;
 
