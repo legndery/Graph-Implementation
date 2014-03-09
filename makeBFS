@@ -1,0 +1,3 @@
+g++ -c BFS.C
+g++ -c graph_header.C
+g++ BFS.o graph_header.o -o a.o
