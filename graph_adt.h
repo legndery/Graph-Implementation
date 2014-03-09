@@ -23,4 +23,8 @@ typedef struct EdgeStruct{
 Graph *create_adj_list(int v);
 void print_graph(Graph *graphModel);
 int *get_edge_list(int k, int *out_counter,int v);
+void enqueue(Vertex_root **queue, int v, Vertex_root *value);
+Vertex_root *dequeue(Vertex_root **queue, int v);
+Vertex_root *search_vertex(Graph *graphModel, int needle);
+int is_Visited(Vertex_root **visited, Vertex_root *needle);
 #endif

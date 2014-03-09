@@ -2,26 +2,7 @@
 #include<stdlib.h>
 #include "graph_adt.h"
 
-Vertex_root *search_vertex(Graph *graphModel, int needle){
-	for(int i=0;i<graphModel->vertex_number;i++){
-		if(graphModel->vertices[i]->name == needle){
-			return graphModel->vertices[i];
-		}
-	}
-	return NULL;
-}
-void enqueue(Vertex_root **queue, int v, Vertex_root *value);
-Vertex_root *dequeue(Vertex_root **queue, int v);
-int is_Visited(Vertex_root **visited, Vertex_root *needle){
-	int i=0;
-	while(visited[i] != NULL){
-		if(visited[i] == needle){
-			return 1;
-		}
-		i++;
-	}
-	return 0;
-}
+
 
 Vertex_root **BFS_algo(Graph *graphModel, Vertex_root *start){
 
@@ -59,36 +40,7 @@ Vertex_root **BFS_algo(Graph *graphModel, Vertex_root *start){
 	return visited;
 
 }
-void enqueue(Vertex_root **queue, int v, Vertex_root *value){
-	int i=0;
-	for(i=0;i<v;i++){
-		if(queue[i] == NULL){
-			break;
-		}
-	}
-	if(i==v){
-		printf("Cannot Enqueuw, Queue Full");
-		return;
-	}
-	queue[i] = value;
 
-}
-Vertex_root *dequeue(Vertex_root **queue, int v){
-	Vertex_root *returnVal;
-	if(queue[0] == NULL){
-		printf("Queue Empty");
-		return NULL;
-	}else{
-		returnVal = queue[0];
-		for(int i=0;i<v;i++){
-			if(queue[i] != NULL){
-				queue[i] = queue[i+1];
-			}
-		}
-		return returnVal;
-	}
-
-}
 int main(){
 	int v=5,s=2;
 	int max = v;
