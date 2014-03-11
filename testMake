@@ -1,0 +1,4 @@
+g++ -c graph_header.C
+g++ -c test.C
+g++ test.o graph_header.o -o t.o
+

@@ -3,6 +3,21 @@
 #include<string.h>
 #include "graph_adt.h" 
 
+int weightGet(Vertex_root *from, Vertex_root *to){
+	if(from == to){
+		return 0;
+	}else{
+		Edge *tempE = from->edges;
+		while(tempE != NULL){
+			if(tempE->vertx == to){
+				return tempE->weight;
+			}
+			tempE = tempE->next;
+		}
+	}
+	return 9999;
+}
+
 Vertex_root *search_vertex(Graph *graphModel, int needle){
 	for(int i=0;i<graphModel->vertex_number;i++){
 		if(graphModel->vertices[i]->name == needle){
@@ -51,6 +66,170 @@ Vertex_root *dequeue(Vertex_root **queue, int v){
 	}
 
 }
+void extract_from_comma(char *str, int *result, int is_weight, int v){
+int isCorrect =0,temp=0,j=0,is_neg=0;
+	while(!isCorrect){
+		for(int i=0;i<strlen(str);i++){
+			if(str[i]!= ' '){
+				if(str[i] == ','&& temp){
+					if((temp <=v && temp >0) || is_weight){
+						result[j++] = temp-1+is_weight;
+						is_neg = 0;
+					}else{	
+						printf("Invalid Edge, Start from the top");
+						break;
+					}
+					temp=0;
+				}else{
+					//determine if negetive
+					if(str[i] == '-'){
+						is_neg=1;
+					}else{
+						if(!is_neg){
+							temp = temp*10+str[i]-'0';
+						}else{
+							printf("WTF %d %d %d",temp,str[i],str[i]-'0');
+							temp = temp*10-str[i]+'0';
+							printf("%d \n", temp);
+						}
+												
+					}
+				}
+			}
+		}
+			
+		
+		if(temp){
+			result[j++] = temp-1+is_weight;
+			is_neg = 0;
+		}
+		/*for(int i=0;i<edges;i++){
+			printf("%d ", result[i]);
+		}*/
+		isCorrect = 1;
+	}
+	return;
+
+}
+int *get_edge_list_w_a(int k,int *out_counter, int v){
+	int d,j=0,edges=0,i=0,flag=0;
+	int *result;
+	char *str=(char *)malloc(1024*sizeof(char));
+	printf("Enter the Edges from vertex %d separated by comma(n for no edges):",(k+1));
+	scanf("%s", str);
+//	puts(str);
+	///////////////////////////////////////
+	if(str[0] != 'n'){
+	for(i=0;i<strlen(str);i++){
+		if((str[i] ==',' || str[i] == ':') && !flag){
+			flag=0;
+		}
+		else if(str[i] !=',' && !flag){
+			flag=1;
+		}
+		if(str[i] == ',' && flag){
+			edges++;
+		}
+	}
+	edges++;
+	printf("Edges %d\n", edges);
+	//////////////////////////////////
+	result = (int *)malloc((edges*2)*sizeof(int));
+	*out_counter = edges;
+	extract_from_comma(str, result,0,v);
+	printf("Enter the Weights of the Edges from vertex %d separated by comma:",(k+1));
+	scanf("%s", str);
+	extract_from_comma(str, &result[edges],1,v);
+	//printf("I am returning\n");
+	}else{
+		result = (int *)malloc(sizeof(int));
+		out_counter = 0;
+	}
+	free(str);
+	return result;
+}
+
+int *get_edge_list_w(int k,int *out_counter, int v){
+	int d,temp=0,j=0,edges=0,isCorrect=0,i=0,tempW=0;
+	int *result;
+	char *str=(char *)malloc(1024*sizeof(char));
+	printf("Enter the Edges from vertex %d with weight in this format vertex:wight separated by comma:",(k+1));
+	scanf("%s", str);
+//	puts(str);
+	///////////////////////////////////////
+	int flag=0;
+	for(i=0;i<strlen(str);i++){
+		if((str[i] ==',' || str[i] == ':') && !flag){
+			flag=0;
+		}
+		else if(str[i] !=',' && !flag){
+			flag=1;
+		}
+		if(str[i] == ',' && flag){
+			edges++;
+		}
+	}
+	edges++;
+	printf("Edges %d\n", edges);
+	//////////////////////////////////
+	result = (int *)malloc((edges*2)*sizeof(int));
+	*out_counter = edges;
+	int is_colon_started = 0,is_neg=0;
+
+	while(!isCorrect){
+		for(i=0;i<strlen(str);i++){
+			if(str[i]!= ' '){
+				if(str[i] == ','&& temp){//left side was an key value pair
+					if(temp <=v && temp >0){
+						//printf("--%d--", j);
+						result[j++] = temp-1;
+						if(is_neg)
+							result[j+edges-1] = -1*tempW; 
+						else
+							result[j+edges-1] = tempW;
+						is_colon_started =0;
+						is_neg = 0;
+					}else{	
+						printf("Invalid Edge, Start from the top");
+						break;
+					}
+					temp=0;
+					tempW=0;
+				}else{
+					if(str[i] != ':'){
+						if(str[i] != '-'){
+							if(!is_colon_started){
+								temp = temp*10+str[i]-'0';						
+							}else{
+								tempW = tempW*10+str[i] - '0';
+							}
+						}else if(str[i] == '-' && is_colon_started){
+							is_neg = 1;
+						}
+					}else if(str[i] == ':' && !is_colon_started){
+						is_colon_started = 1;
+					}
+				}
+			}
+		}
+			
+		
+		if(temp){
+			result[j++] = temp-1;
+			if(is_neg)
+				result[j+edges-1] = -1*tempW;
+			else
+				result[j+edges-1] = tempW;
+		}
+		/*for(int i=0;i<edges;i++){
+			printf("%d ", result[i]);
+		}*/
+		isCorrect = 1;
+	}
+	//printf("I am returning\n");
+	return result;
+}
+
 int *get_edge_list(int k,int *out_counter, int v){
 	int d,temp=0,j=0,edges=0,isCorrect=0,i=0;
 	int *result;
@@ -108,30 +287,39 @@ int *get_edge_list(int k,int *out_counter, int v){
 
 
 Graph *create_adj_list(int v){
-	int i,j;
-	char ch='y';
+	int i,j,wegh;
 	Graph *graphModel=(Graph *)malloc(sizeof(Graph));//the whole graph like a wrapper
-	Vertex *vert;//the number of vertices
+	//Vertex *vert;//the number of vertices
 	Edge *tempEdge;
 	//Vertex_root *vertices;//the vertex lists
-	vert = (Vertex *)malloc(v*sizeof(Vertex));//NOT GONNA NEED IT!
+	//vert = (Vertex *)malloc(v*sizeof(Vertex));//NOT GONNA NEED IT!
 	graphModel->vertices = (Vertex_root **)malloc(v*sizeof(Vertex_root));
 	graphModel->vertex_number = v;
 	//*init and make vertex objects
 	for(i=0;i<v;i++){
 		graphModel->vertices[i] = (Vertex_root *)malloc(sizeof(Vertex_root));
 		graphModel->vertices[i]->name = i;
+		graphModel->vertices[i]->predecessor = NULL;
+		graphModel->vertices[i]->shortest_path_estimate =9999; 
 		graphModel->vertices[i]->edges = NULL;
 		graphModel->vertices[i]->visited = 0;
 	}
 	//--done*/
+	printf("\nIs the Graph Weighted?(0/1)");
+	scanf("%d", &wegh);
+
 	for(i =0;i<v;i++){
-		int edgeCounter,k;
-		int *edges_exist = get_edge_list(i, &edgeCounter, v);
-		/*for(int l=0;l<edgeCounter;l++){
-			printf("%d ", edges_exist[l]);
-		}*/
-		//printf("%d edges\n", edgeCounter);
+		int edgeCounter=0,k;
+		int *edges_exist;
+		if(wegh){
+			edges_exist = get_edge_list_w_a(i, &edgeCounter, v);
+		}else{
+			edges_exist = get_edge_list(i, &edgeCounter, v);
+		}
+//		for(int l=0;l<edgeCounter;l++){
+//			printf("%d ", edges_exist[l]);
+//		}
+//		printf("%d edges\n", edgeCounter);
 		for(j=0;j<edgeCounter;j++){
 			k = edges_exist[j];
 			//printf("is it here?");
@@ -140,7 +328,7 @@ Graph *create_adj_list(int v){
 					tempEdge = (Edge *)malloc(sizeof(Edge));
 					tempEdge->vertx = (graphModel->vertices[k]);
 					tempEdge->next = NULL;
-					tempEdge->weight = 1;
+					tempEdge->weight = (wegh?(edges_exist[j+edgeCounter]):1) ;
 					graphModel->vertices[i]->edges = tempEdge;
 				}else{
 					
@@ -155,7 +343,7 @@ Graph *create_adj_list(int v){
 					tempEdge = (Edge *)malloc(sizeof(Edge));
 					tempEdge->vertx =(graphModel->vertices[k]);
 					tempEdge->next = NULL;
-					tempEdge->weight = 1;
+					tempEdge->weight = (wegh?(edges_exist[j+edgeCounter]):1);
 					localTemp->next = tempEdge;
 				}
 		}
@@ -210,7 +398,7 @@ void print_graph(Graph *graphModel){
 		Edge *tempE = graphModel->vertices[i]->edges;
 		if(tempE != NULL){
 			while(tempE != NULL){
-				printf("| %d | ",tempE->vertx->name+1);
+				printf("| %d(%d) | ",tempE->vertx->name+1, tempE->weight);
 				tempE = tempE->next;
 			}
 			printf("\n");
